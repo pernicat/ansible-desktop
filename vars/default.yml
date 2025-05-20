@@ -1,0 +1,55 @@
+apt_packages:
+  - vim
+  - git
+  - curl
+  - wget
+  - htop
+  - neofetch
+  - unzip
+  - gnupg
+  - gparted
+  - flatpak
+  - gnome-software-plugin-flatpak
+  - timeshift
+  - ca-certificates
+  # Developer tools
+  - make
+  - gcc
+  - g++
+  - pkg-config
+  - python3-dev
+  - jq
+  - tree
+  - shellcheck
+  - docker.io
+  - tmux
+  - direnv
+  # networking tools
+  - net-tools
+  - nmap
+  - traceroute
+  - iputils-ping
+  - dnsutils
+  - curlie
+  # Security / Privacy Tools
+  - gufw                # firewall GUI
+  - keepassxc           # password manager
+  - seahorse            # GPG key manager
+  # Quality of Life
+  - xclip               # clipboard for terminal
+  - file                # inspect file types
+  - fonts-firacode      # coding font
+  - numlockx            # auto-enable Num Lock
+  - redshift            # screen color temperature
+
+flatpak_packages:
+  - com.spotify.Client
+  - org.gimp.GIMP
+  - org.videolan.VLC
+  - org.gimp.GIMP
+  - org.inkscape.Inkscape
+  - org.libreoffice.LibreOffice
+  # - org.mozilla.Thunderbird
+  - com.transmissionbt.Transmission
+
+personal_user: pernicat

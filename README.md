@@ -1,75 +1,130 @@
 # Desktop Configuration with Ansible
 
-This repository contains an Ansible script designed to configure your desktop computer. It automates system setup and management, ensuring a consistent and reproducible environment.
+This repository contains an Ansible playbook designed to configure a Debian-based desktop environment. It helps automate the installation and setup of essential applications, development tools, and personal configurations, ensuring a consistent and repeatable setup process.
 
+---
 
-## System setup
+## 🖥️ Use Case
 
-1. Installer Type
-  - Graphical Installer
-  - Easier to navigate and avoids missing config steps.
-  - Use the netinst ISO (small download, pulls latest packages during install):
-    - (Debian Netinst ISO Download)[https://www.debian.org/distrib/]
-2. Language, Location, Keyboard
-  - Choose what fits your locale and keyboard layout. No wrong answers here.
-3. Partitioning
-  - Recommended: Manual or Guided with Separate /home
-  - Benefit: You can reinstall OS later without wiping your personal files.
-  - Example:
-    - `/` (root): ~20–40 GB
-    - `/home`: rest of the disk
-    - `/boot/efi`: (if UEFI, ~500 MB, FAT32)
-    - Optional: separate `/var` or `swap` partition
-    - *If unsure, choose Guided – use entire disk with separate `/home`.*
-4. Users
-  -  Set a strong root password (or leave blank to disable root and use sudo)
-  - Create a regular user (this will be your daily driver account)\
-5. Network Configuration
-  - Wired will auto-configure via DHCP.
-  - For Wi-Fi: you'll need to load firmware (see notes below).
-6. Software Selection
-  - **Desktop Environment: Cinnamon**
-    - Matches your LMDE-style goal
-    - If not listed, select “None” and install manually later.
-  - **Deselect:**
-    - "GNOME" (unless you specifically want GNOME)
-    - "Print Server" (unless you plan to print)
-    - "SSH Server" (optional — you can install later)
-  - **Always select:**
-    - “Standard System Utilities”
-7. Package Mirror
-  - Choose a nearby country/mirror
-  - Enable the security + updates repos (you can always change them later in `/etc/apt/sources.list`)
-8. GRUB Bootloader
-  - Install GRUB to:
-    - `/dev/sda` or your primary drive (not a partition like `/dev/sda1`)
-    - Necessary if this is your main OS or dual-boot setup
-9. After First Boot – Recommended First Steps
-  - `sudo apt update && sudo apt upgrade`
+This playbook is intended for:
 
-## Usage
+* Fresh installations of Debian (especially with Cinnamon)
+* Users who want to document and replicate their personal system setup
+* Developers who need to bootstrap a consistent environment quickly
 
-- Execute the script using the `ansible-playbook` command.
-- Ensure the target machine is accessible and properly configured for Ansible (e.g., SSH access and Python installed).
+---
 
-### System setup
+## 📦 Features
 
-```sh
+* Installs Cinnamon desktop environment
+* Adds useful APT and Flatpak packages
+* Installs Google Chrome, VSCode, Steam
+* Installs Python tooling (`pipx`, `pyenv`)
+* Optionally creates a personal user account
+
+---
+
+## 🚀 Quick Start
+
+### 1. Prerequisites
+
+Install Ansible and supporting tools:
+
+```bash
 sudo apt update && sudo apt install -y \
   git \
   python3 \
   python3-pip \
   ansible
-
 ```
 
-### Install
+### 2. Clone This Repository
 
-```sh
+```bash
+git clone https://your.repo/ansible-desktop.git
+cd ansible-desktop
+```
+
+### 3. Run the Playbook
+
+```bash
 ansible-playbook -i inventory.ini playbook.yml
 ```
 
-## Notes
+> 💡 You can edit `vars/default.yml` to customize package lists and your personal user settings.
 
-- Customize variables and tasks to match your specific desktop configuration needs.
-- Carefully review the script before running it to prevent unintended changes.
+---
+
+## 🗂 Project Structure
+
+```text
+ansible-desktop/
+├── README.md
+├── inventory.ini           # Inventory file (localhost)
+├── playbook.yml            # Entry point
+├── vars/
+│   └── default.yml         # Variables for APT/Flatpak/user
+└── roles/
+    └── common/
+        ├── tasks/
+        │   └── main.yml     # All setup tasks
+        ├── files/
+        │   └── ssh_keys/    # Optional public keys
+        └── files/my-dotfiles/ (optional)
+```
+
+---
+
+## 📝 Customization
+
+### System Options in `default.yml`
+
+```yaml
+apt_packages:
+  - vim
+  - git
+  - curl
+  - htop
+  - ...
+
+flatpak_packages:
+  - com.spotify.Client
+  - org.gimp.GIMP
+
+personal_user: pernicat
+ssh_key_enabled: true
+```
+
+You can comment out the `personal_user` section if you're not using it yet.
+
+---
+
+## 🧠 Tips
+
+* Run on a fresh install after initial Debian setup
+* Ideal with Cinnamon desktop (select in Debian installer or install via Ansible)
+* Customize your dotfiles and re-enable them once your base config is stable
+* Use Timeshift for backups before and after major changes
+
+---
+
+## 📌 Notes
+
+* Google Chrome is installed via `.deb` from Google's site
+* VSCode is added from Microsoft’s APT repo
+* Python tools (`pipx`, `pyenv`) are installed and configured
+* Flatpak is used for apps that benefit from isolation and newer versions
+
+---
+
+## 🔒 Security
+
+* Personal user can be created and configured with SSH key
+* All software sources are reputable (Google, Microsoft, Flathub)
+* You should still review the playbook before first use
+
+---
+
+## ✅ License
+
+This project is currently intended for personal use and is shared without any license.
