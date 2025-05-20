@@ -133,3 +133,23 @@
     key: "{{ lookup('file', 'files/ssh_keys/{{ personal_user }}.pub') }}"
     state: present
   when: ssh_key_enabled | default(true)
+
+- name: Install Rust using rustup
+  become: false
+  shell: |
+    curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
+  args:
+    executable: /bin/bash
+  environment:
+    CARGO_HOME: "{{ ansible_env.HOME }}/.cargo"
+    RUSTUP_HOME: "{{ ansible_env.HOME }}/.rustup"
+    PATH: "{{ ansible_env.HOME }}/.cargo/bin:{{ ansible_env.PATH }}"
+  when: install_rust
+
+- name: Add Rust to PATH in .bashrc
+  lineinfile:
+    path: "/home/{{ ansible_user_id }}/.bashrc"
+    line: 'export PATH="$HOME/.cargo/bin:$PATH"'
+    insertafter: EOF
+  become: false
+  when: install_rust

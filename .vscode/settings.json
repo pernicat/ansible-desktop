@@ -20,6 +20,8 @@
         "numlockx",
         "pipx",
         "pyenv",
+        "rustup",
+        "tlsv",
         "transmissionbt",
         "venv",
         "videolan",

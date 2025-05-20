@@ -53,3 +53,5 @@ flatpak_packages:
   - com.transmissionbt.Transmission
 
 personal_user: pernicat
+
+install_rust: true
