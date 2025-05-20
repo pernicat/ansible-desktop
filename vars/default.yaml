@@ -1,0 +1,12 @@
+apt_packages:
+  - vim
+  - git
+  - curl
+  - flatpak
+  - gnome-software-plugin-flatpak
+  - timeshift
+  - htop
+
+flatpak_packages:
+  - com.spotify.Client
+  - org.gimp.GIMP

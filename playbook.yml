@@ -1,0 +1,7 @@
+- name: Configure my Debian system
+  hosts: localhost
+  become: true
+  vars_files:
+    - vars/default.yml
+  roles:
+    - common

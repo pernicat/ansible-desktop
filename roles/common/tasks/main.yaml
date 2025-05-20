@@ -1,0 +1,22 @@
+- name: Install APT packages
+  apt:
+    name: "{{ apt_packages }}"
+    state: present
+    update_cache: yes
+
+- name: Install Flatpak packages
+  flatpak:
+    name: "{{ item }}"
+    state: present
+    remote: flathub
+  loop: "{{ flatpak_packages }}"
+
+- name: Copy dotfiles
+  copy:
+    src: "{{ item.src }}"
+    dest: "{{ item.dest }}"
+    mode: '0644'
+  loop:
+    - { src: "my-dotfiles/.bashrc", dest: "/home/{{ ansible_user_id }}/.bashrc" }
+    - { src: "my-dotfiles/.vimrc", dest: "/home/{{ ansible_user_id }}/.vimrc" }
+  become: false
