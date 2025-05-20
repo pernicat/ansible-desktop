@@ -30,7 +30,7 @@ apt_packages:
   - traceroute
   - iputils-ping
   - dnsutils
-  - curlie
+  # - curlie
   # Security / Privacy Tools
   - gufw                # firewall GUI
   - keepassxc           # password manager
