@@ -1,0 +1,90 @@
+---
+- name: Prepare system for NVIDIA proprietary driver install
+  hosts: localhost
+  become: yes
+
+  vars:
+    nvidia_driver_version: "570.57"
+    nvidia_run_url: "https://us.download.nvidia.com/XFree86/Linux-x86_64/570.57/NVIDIA-Linux-x86_64-570.57.run"
+    nvidia_run_path: "/opt/NVIDIA-Linux-x86_64-570.57.run"
+    custom_tmpdir: "/opt/nvidia-tmp"
+
+  tasks:
+
+    - name: Update APT cache
+      apt:
+        update_cache: yes
+
+    - name: Upgrade packages
+      apt:
+        upgrade: dist
+        autoremove: yes
+
+    - name: Install required build and kernel packages
+      apt:
+        name:
+          - build-essential
+          - dkms
+          - linux-headers-{{ ansible_kernel }}
+          - gcc
+          - make
+          - curl
+          - wget
+          - pkg-config
+          - libglvnd-dev
+        state: present
+
+    - name: Enable i386 architecture (for 32-bit libs)
+      command: dpkg --add-architecture i386
+      register: arch_add
+      changed_when: "'added architecture' in arch_add.stdout or arch_add.rc == 0"
+      ignore_errors: true
+
+    - name: Update APT cache after adding i386
+      apt:
+        update_cache: yes
+      when: arch_add is changed
+
+    - name: Install optional 32-bit compatibility libraries
+      apt:
+        name:
+          - libc6:i386
+          - libgl1:i386
+        state: present
+
+    - name: Remove any existing Debian NVIDIA drivers
+      apt:
+        name: "^nvidia-.*"
+        state: absent
+        purge: yes
+
+    - name: Blacklist Nouveau driver
+      copy:
+        dest: /etc/modprobe.d/disable-nouveau.conf
+        content: |
+          blacklist nouveau
+          options nouveau modeset=0
+
+    - name: Regenerate initramfs
+      command: update-initramfs -u
+
+    - name: Create alternate tmpdir for NVIDIA installer
+      file:
+        path: "{{ custom_tmpdir }}"
+        state: directory
+        mode: '1777'
+
+    - name: Download NVIDIA driver installer
+      get_url:
+        url: "{{ nvidia_run_url }}"
+        dest: "{{ nvidia_run_path }}"
+        mode: '0755'
+
+
+    - name: Display manual instruction to run NVIDIA installer
+      debug:
+        msg: |
+          Now switch to a TTY and stop your display manager:
+          sudo systemctl stop gdm
+          Then run:
+          sudo TMPDIR={{ custom_tmpdir }} {{ nvidia_run_path }} --dkms --install-libglvnd

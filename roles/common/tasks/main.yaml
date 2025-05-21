@@ -159,3 +159,103 @@
 #     insertafter: EOF
 #   become: false
 #   when: install_rust
+
+# - name: Ensure dkms is installed
+#   apt:
+#     name: dkms
+#     state: present
+#     update_cache: yes
+
+# - name: Check if mok keys already exist
+#   stat:
+#     path: "/var/lib/dkms/mok.pub"
+#   register: mok_stat_already_exists
+
+
+# - name: Generate MOK keys
+#   command: dkms generate_mok
+#   become: true
+#   register: mok_gen
+#   when: not (mok_stat_already_exists.stat.exists)
+
+# - name: Check if mok keys exist
+#   stat:
+#     path: "/var/lib/dkms/mok.pub"
+#   register: mok_stat
+
+# - name: Import MOK key
+#   command: mokutil --import /var/lib/dkms/mok.pub
+#   become: true
+#   when: mok_stat.stat.exists and mok_gen.changed
+
+# - name: Add Non-free firmware repository
+#   apt_repository:
+#     repo: deb http://deb.debian.org/debian/ sid main contrib non-free non-free-firmware
+#     state: present
+#     filename: debian-sid-non-free
+
+# - name: Ensure contrib and non-free repos are enabled for current Debian release
+#   apt_repository:
+#     repo: "deb http://deb.debian.org/debian/ {{ ansible_distribution_release }} main contrib non-free non-free-firmware"
+#     state: present
+#     filename: debian-main
+
+# - name: Ensure contrib and non-free updates repo is enabled
+#   apt_repository:
+#     repo: "deb http://deb.debian.org/debian/ {{ ansible_distribution_release }}-updates main contrib non-free non-free-firmware"
+#     state: present
+#     filename: debian-updates
+
+# - name: Ensure contrib and non-free security repo is enabled
+#   apt_repository:
+#     repo: "deb http://security.debian.org/debian-security {{ ansible_distribution_release }}-security main contrib non-free non-free-firmware"
+#     state: present
+#     filename: debian-security
+
+# - name: Ensure backports repo is enabled
+#   apt_repository:
+#     repo: "deb http://deb.debian.org/debian {{ ansible_distribution_release }}-backports main contrib non-free non-free-firmware"
+
+# - name: Update apt cache
+#   apt:
+#     update_cache: yes
+
+# - name: Install NVIDIA drivers
+#   apt:
+#     name: nvidia-driver
+#     state: present
+#     update_cache: yes
+
+# - name: Reboot to enroll MOK
+#   reboot:
+#     msg: "Rebooting to enroll MOK keys"
+#     when: mok_stat.stat.exists and mok_gen.changed
+#     pre_reboot_delay: 5
+#     post_reboot_delay: 60
+#     test_command: whoami
+
+# - name: Download NVIDIA local installer
+#   set_fact:
+#     nvidia_distro: "debian{{ ansible_distribution_major_version }}"
+#     nvidia_arch_ext: "{{ ansible_architecture }}.deb"
+#   get_url:
+#     url: "https://developer.download.nvidia.com/compute/nvidia-driver/{{ nvidia_version }}/local_installers/nvidia-driver-local-repo-{{ nvidia_distro }}-{{ nvidia_version }}_{{ nvidia_arch_ext }}.deb"
+#     dest: "/tmp/nvidia-driver-local-repo-{{ nvidia_distro }}-{{ nvidia_version }}_{{ nvidia_arch_ext }}.deb"
+#     mode: '0644'
+
+# # https://us.download.nvidia.com/XFree86/Linux-x86_64/570.153.02/NVIDIA-Linux-x86_64-570.153.02.run
+
+# - name: Install NVIDIA local repo package
+#   apt:
+#     deb: "/tmp/nvidia-driver-local-repo-{{ nvidia_distro }}-{{ nvidia_version }}_{{ nvidia_arch_ext }}.deb"
+#     state: present
+
+# - name: Update apt cache
+#   apt:
+#     update_cache: yes
+
+# - name: Copy NVIDIA keyring to /usr/share/keyrings
+#   copy:
+#     src: "/var/nvidia-driver-local-repo-{{ nvidia_distro }}-{{ nvidia_version }}/nvidia-driver-*-keyring.gpg"
+#     dest: "/usr/share/keyrings/"
+#     remote_src: yes

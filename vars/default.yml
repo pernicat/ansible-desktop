@@ -41,6 +41,12 @@ apt_packages:
   - fonts-firacode      # coding font
   - numlockx            # auto-enable Num Lock
   - redshift            # screen color temperature
+  # Helpers
+  - nvidia-detect      # NVIDIA driver detection
+  - linux-headers-amd64
+  - dkms
+  - firmware-misc-nonfree
+
 
 flatpak_packages:
   - com.spotify.Client
@@ -55,3 +61,7 @@ flatpak_packages:
 personal_user: pernicat
 
 install_rust: true
+
+nvidia_version: "550.54.14"
+# nvidia_distro: "debian12"
+# nvidia_arch_ext: "amd64.deb"
