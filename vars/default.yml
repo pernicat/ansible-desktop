@@ -42,7 +42,7 @@ apt_packages:
   - numlockx            # auto-enable Num Lock
   - redshift            # screen color temperature
   # Helpers
-  - nvidia-detect      # NVIDIA driver detection
+  # - nvidia-detect      # NVIDIA driver detection
   - linux-headers-amd64
   - dkms
   - firmware-misc-nonfree

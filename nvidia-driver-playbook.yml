@@ -1,0 +1,14 @@
+- name: Run NVIDIA driver tasks
+  hosts: localhost
+  become: yes
+  vars:
+    # Check driver at https://www.nvidia.com/en-us/drivers/
+    # Version check date: 2025-05-31
+    nvidia_driver_version: "570.153.02"
+    #                https://us.download.nvidia.com/XFree86/Linux-x86_64/570.153.02/NVIDIA-Linux-x86_64-570.153.02.run
+    nvidia_run_url: "https://us.download.nvidia.com/XFree86/Linux-x86_64/570.153.02/NVIDIA-Linux-x86_64-570.153.02.run"
+    nvidia_run_path: "/opt/NVIDIA-Linux-x86_64-570.153.02.run"
+    custom_tmpdir: "/opt/nvidia-tmp"
+
+  tasks:
+    - import_tasks: roles/common/tasks/nvidia-driver.yml

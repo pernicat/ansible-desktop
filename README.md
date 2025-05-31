@@ -55,6 +55,18 @@ ansible-playbook -i inventory.ini playbook.yml
 
 ---
 
+### 4. Things to do after...
+
+Setup .ssh key
+
+```bash
+ssh-keygen -t ed25519 -C "your_email@example.com"
+```
+
+- Log into Chrome
+- Set correct Datetime format `%Y-%m-%d %H:%M:%S`
+- add new key to github
+
 ## 🗂 Project Structure
 
 ```text

@@ -23,34 +23,6 @@
     remote: flathub
   loop: "{{ flatpak_packages }}"
 
-# - name: Copy dotfiles
-#   copy:
-#     src: "{{ item.src }}"
-#     dest: "{{ item.dest }}"
-#     mode: '0644'
-#   loop:
-#     - { src: "my-dotfiles/.bashrc", dest: "/home/{{ ansible_user_id }}/.bashrc" }
-#     - { src: "my-dotfiles/.vimrc", dest: "/home/{{ ansible_user_id }}/.vimrc" }
-#   become: false
-
-# - name: Ensure Zsh is installed
-#   apt:
-#     name: zsh
-#     state: present
-
-# - name: Install Oh My Zsh
-#   become: false
-#   shell: |
-#     sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)" "" --unattended
-#   args:
-#     executable: /bin/bash
-#   when: ansible_user_id != 'root'
-
-# - name: Change default shell to zsh
-#   user:
-#     name: "{{ ansible_user_id }}"
-#     shell: /usr/bin/zsh
-
 - name: Install Google Chrome
   apt:
     deb: https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
@@ -71,11 +43,6 @@
     name: code
     state: present
     update_cache: yes
-
-- name: Ensure Steam is installed
-  apt:
-    name: steam
-    state: present
 
 - name: Ensure dependencies for pyenv and pipx are installed
   apt:
@@ -112,19 +79,6 @@
   environment:
     PATH: "{{ ansible_env.HOME }}/.local/bin:{{ ansible_env.PATH }}"
 
-# - name: Clone pyenv repo
-#   git:
-#     repo: https://github.com/pyenv/pyenv.git
-#     dest: "{{ ansible_env.HOME }}/.pyenv"
-#   become: false
-
-# - name: Set pyenv environment in .bashrc
-#   lineinfile:
-#     path: "/home/{{ ansible_user_id }}/.bashrc"
-#     line: 'export PYENV_ROOT="$HOME/.pyenv" && export PATH="$PYENV_ROOT/bin:$PATH" && eval "$(pyenv init --path)"'
-#     insertafter: EOF
-#   become: false
-
 - name: Ensure my personal user exists
   user:
     name: "{{ personal_user }}"
@@ -133,129 +87,26 @@
     create_home: yes
     state: present
 
-# - name: Set authorized SSH key for my user (optional)
-#   authorized_key:
-#     user: "{{ personal_user }}"
-#     key: "{{ lookup('file', 'files/ssh_keys/{{ personal_user }}.pub') }}"
-#     state: present
-#   when: ssh_key_enabled | default(true)
+- name: Steam requirements
+  apt:
+    name:
+      - libc6:amd64
+      - libc6:i386
+      - libegl1:amd64
+      - libegl1:i386
+      - libgbm1:amd64
+      - libgbm1:i386
+      - libgl1-mesa-dri:amd64
+      - libgl1-mesa-dri:i386
+      - libgl1:amd64
+      - libgl1:i386
+      - steam-libs-amd64:amd64
+      - steam-libs-i386:i386
+    state: present
+    update_cache: yes
 
-# - name: Install Rust using rustup
-#   become: false
-#   shell: |
-#     curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y
-#   args:
-#     executable: /bin/bash
-#   environment:
-#     CARGO_HOME: "{{ ansible_env.HOME }}/.cargo"
-#     RUSTUP_HOME: "{{ ansible_env.HOME }}/.rustup"
-#     PATH: "{{ ansible_env.HOME }}/.cargo/bin:{{ ansible_env.PATH }}"
-#   when: install_rust
-
-# - name: Add Rust to PATH in .bashrc
-#   lineinfile:
-#     path: "/home/{{ ansible_user_id }}/.bashrc"
-#     line: 'export PATH="$HOME/.cargo/bin:$PATH"'
-#     insertafter: EOF
-#   become: false
-#   when: install_rust
-
-# - name: Ensure dkms is installed
-#   apt:
-#     name: dkms
-#     state: present
-#     update_cache: yes
-
-# - name: Check if mok keys already exist
-#   stat:
-#     path: "/var/lib/dkms/mok.pub"
-#   register: mok_stat_already_exists
-
-
-# - name: Generate MOK keys
-#   command: dkms generate_mok
-#   become: true
-#   register: mok_gen
-#   when: not (mok_stat_already_exists.stat.exists)
-
-# - name: Check if mok keys exist
-#   stat:
-#     path: "/var/lib/dkms/mok.pub"
-#   register: mok_stat
-
-# - name: Import MOK key
-#   command: mokutil --import /var/lib/dkms/mok.pub
-#   become: true
-#   when: mok_stat.stat.exists and mok_gen.changed
-
-# - name: Add Non-free firmware repository
-#   apt_repository:
-#     repo: deb http://deb.debian.org/debian/ sid main contrib non-free non-free-firmware
-#     state: present
-#     filename: debian-sid-non-free
-
-# - name: Ensure contrib and non-free repos are enabled for current Debian release
-#   apt_repository:
-#     repo: "deb http://deb.debian.org/debian/ {{ ansible_distribution_release }} main contrib non-free non-free-firmware"
-#     state: present
-#     filename: debian-main
-
-# - name: Ensure contrib and non-free updates repo is enabled
-#   apt_repository:
-#     repo: "deb http://deb.debian.org/debian/ {{ ansible_distribution_release }}-updates main contrib non-free non-free-firmware"
-#     state: present
-#     filename: debian-updates
-
-# - name: Ensure contrib and non-free security repo is enabled
-#   apt_repository:
-#     repo: "deb http://security.debian.org/debian-security {{ ansible_distribution_release }}-security main contrib non-free non-free-firmware"
-#     state: present
-#     filename: debian-security
-
-# - name: Ensure backports repo is enabled
-#   apt_repository:
-#     repo: "deb http://deb.debian.org/debian {{ ansible_distribution_release }}-backports main contrib non-free non-free-firmware"
-
-# - name: Update apt cache
-#   apt:
-#     update_cache: yes
-
-# - name: Install NVIDIA drivers
-#   apt:
-#     name: nvidia-driver
-#     state: present
-#     update_cache: yes
-
-# - name: Reboot to enroll MOK
-#   reboot:
-#     msg: "Rebooting to enroll MOK keys"
-#     when: mok_stat.stat.exists and mok_gen.changed
-#     pre_reboot_delay: 5
-#     post_reboot_delay: 60
-#     test_command: whoami
-
-# - name: Download NVIDIA local installer
-#   set_fact:
-#     nvidia_distro: "debian{{ ansible_distribution_major_version }}"
-#     nvidia_arch_ext: "{{ ansible_architecture }}.deb"
-#   get_url:
-#     url: "https://developer.download.nvidia.com/compute/nvidia-driver/{{ nvidia_version }}/local_installers/nvidia-driver-local-repo-{{ nvidia_distro }}-{{ nvidia_version }}_{{ nvidia_arch_ext }}.deb"
-#     dest: "/tmp/nvidia-driver-local-repo-{{ nvidia_distro }}-{{ nvidia_version }}_{{ nvidia_arch_ext }}.deb"
-#     mode: '0644'
-
-# # https://us.download.nvidia.com/XFree86/Linux-x86_64/570.153.02/NVIDIA-Linux-x86_64-570.153.02.run
-
-# - name: Install NVIDIA local repo package
-#   apt:
-#     deb: "/tmp/nvidia-driver-local-repo-{{ nvidia_distro }}-{{ nvidia_version }}_{{ nvidia_arch_ext }}.deb"
-#     state: present
-
-# - name: Update apt cache
-#   apt:
-#     update_cache: yes
-
-# - name: Copy NVIDIA keyring to /usr/share/keyrings
-#   copy:
-#     src: "/var/nvidia-driver-local-repo-{{ nvidia_distro }}-{{ nvidia_version }}/nvidia-driver-*-keyring.gpg"
-#     dest: "/usr/share/keyrings/"
-#     remote_src: yes
+- name: Ensure Steam is installed
+  apt:
+    name: steam
+    state: present
+  ignore_errors: true
