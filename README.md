@@ -41,7 +41,7 @@ sudo apt update && sudo apt install -y \
 ### 2. Clone This Repository
 
 ```bash
-git clone https://your.repo/ansible-desktop.git
+git clone git@github.com:pernicat/ansible-desktop.git
 cd ansible-desktop
 ```
 
