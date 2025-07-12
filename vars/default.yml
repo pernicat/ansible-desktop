@@ -58,7 +58,11 @@ flatpak_packages:
   # - org.mozilla.Thunderbird
   - com.transmissionbt.Transmission
 
+# TODO replace peronsal_user with your users
 personal_user: pernicat
+
+users:
+  - pernicat
 
 install_rust: true
 

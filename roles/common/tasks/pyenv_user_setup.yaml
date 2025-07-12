@@ -1,0 +1,32 @@
+- name: Clone pyenv repository for {{ user }}
+  git:
+    repo: https://github.com/pyenv/pyenv.git
+    dest: "/home/{{ user }}/.pyenv"
+    update: yes
+  become: false
+
+- name: Set up permissions for pyenv directory for {{ user }}
+  file:
+    path: "/home/{{ user }}/.pyenv"
+    owner: "{{ user }}"
+    group: "{{ user }}"
+    recurse: yes
+  become: true
+
+- name: Ensure pyenv shell config directory exists for {{ user }}
+  file:
+    path: "/home/{{ user }}/.bashrc.d"
+    state: directory
+    owner: "{{ user }}"
+    group: "{{ user }}"
+    mode: '0755'
+  become: true
+
+- name: Copy pyenv shell config for {{ user }}
+  copy:
+    src: ".bashrc.d/pyenv.sh"
+    dest: "/home/{{ user }}/.bashrc.d/pyenv.sh"
+    owner: "{{ user }}"
+    group: "{{ user }}"
+    mode: '0644'
+  become: true

@@ -110,3 +110,6 @@
     name: steam
     state: present
   ignore_errors: true
+
+- name: Include pyenv setup
+  import_tasks: pyenv.yaml

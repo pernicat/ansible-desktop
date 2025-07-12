@@ -1,0 +1,28 @@
+- name: Install dependencies for pyenv
+  apt:
+    name:
+      - make
+      - build-essential
+      - libssl-dev
+      - zlib1g-dev
+      - libbz2-dev
+      - libreadline-dev
+      - libsqlite3-dev
+      - wget
+      - curl
+      - llvm
+      - libncursesw5-dev
+      - xz-utils
+      - tk-dev
+      - libxml2-dev
+      - libxmlsec1-dev
+      - libffi-dev
+      - liblzma-dev
+    state: present
+    update_cache: yes
+
+- name: Add pyenv for all users
+  include_tasks: pyenv_user_setup.yaml
+  loop: "{{ users }}"
+  loop_control:
+    loop_var: user
