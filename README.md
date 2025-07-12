@@ -36,6 +36,7 @@ sudo apt update && sudo apt install -y \
   python3 \
   python3-pip \
   ansible
+ansible-galaxy collection install community.general
 ```
 
 ### 2. Clone This Repository

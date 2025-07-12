@@ -46,6 +46,7 @@ apt_packages:
   - linux-headers-amd64
   - dkms
   - firmware-misc-nonfree
+  - direnv
 
 
 flatpak_packages:
@@ -63,6 +64,20 @@ personal_user: pernicat
 
 users:
   - pernicat
+
+pipx_packages:
+  - uv
+  - poetry
+  - ruff
+  - virtualenv
+  - flake8
+  - black
+  - isort
+  - pip-tools
+  - mypy
+  - bandit
+  - autopep8
+  - ipython
 
 install_rust: true
 

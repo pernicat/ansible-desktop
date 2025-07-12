@@ -1,3 +1,20 @@
+# - name: Ensure ~/.bashrc sources ~/.bashrc.d for {{ user }}
+#   blockinfile:
+#     path: "/home/{{ user }}/.bashrc"
+#     create: yes
+#     block: |
+#       # Load all shell config snippets from ~/.bashrc.d
+#       if [ -d "$HOME/.bashrc.d" ]; then
+#         for file in "$HOME/.bashrc.d/"*; do
+#           [ -f "$file" ] && . "$file"
+#         done
+#       fi
+#     marker: "# {mark} ANSIBLE MANAGED BLOCK: bashrc.d includes"
+#     owner: "{{ user }}"
+#     group: "{{ user }}"
+#     mode: '0644'
+#   become: true
+
 - name: Clone pyenv repository for {{ user }}
   git:
     repo: https://github.com/pyenv/pyenv.git
@@ -22,11 +39,45 @@
     mode: '0755'
   become: true
 
-- name: Copy pyenv shell config for {{ user }}
+- name: "Setup Directory structure for {{ user }}"
+  file:
+    path: "/home/{{ user }}/{{ item }}"
+    state: directory
+    mode: '0755'
+    owner: "{{ user }}"
+    group: "{{ user }}"
+  become: true
+  loop:
+    - AI
+    - AI/data
+    - AI/data/input
+    - AI/data/output
+    - AI/models
+    - AI/models/llms
+    - AI/models/deffusion
+    - AI/models/whisper
+    - AI/venvs
+    - Projects
+
+- name: Copy files for {{ user }}
   copy:
-    src: ".bashrc.d/pyenv.sh"
-    dest: "/home/{{ user }}/.bashrc.d/pyenv.sh"
+    src: "{{ item }}"
+    dest: "/home/{{ user }}/{{ item }}"
     owner: "{{ user }}"
     group: "{{ user }}"
     mode: '0644'
   become: true
+  loop:
+    - .bashrc.d/pipx.sh
+    - .bashrc.d/pyenv.sh
+    - .bashrc.d/direnv.sh
+    - AI/README.md
+
+- name: "Install pipx packages for {{ user }}"
+  community.general.pipx:
+    name: "{{ item }}"
+    state: present
+  become_user: "{{ user }}"
+  loop: "{{ pipx_packages }}"
+
+
