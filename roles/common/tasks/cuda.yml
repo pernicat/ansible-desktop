@@ -1,0 +1,32 @@
+- name: Download NVIDIA CUDA installer .deb
+  get_url:
+    url: https://developer.download.nvidia.com/compute/cuda/12.9.1/local_installers/cuda-repo-debian12-12-9-local_12.9.1-575.57.08-1_amd64.deb
+    dest: /tmp/cuda-repo.deb
+    mode: '0644'
+
+- name: Install the CUDA .deb package
+  # for some reason this failed and had to be run manually
+  # > sudo dpkg -i /tmp/cuda-repo.deb
+  apt:
+    deb: /tmp/cuda-repo.deb
+    state: present
+
+- name: Copy CUDA GPG keyring
+  # This also failed and needed to be run manually (because there was a mssing keyring)
+  # the output of the above command gives the correct command
+  # > sudo cp /var/cuda-repo-debian12-12-9-local/cuda-B496360C-keyring.gpg /usr/share/keyrings/
+  copy:
+    remote_src: yes
+    src: /var/cuda-repo-debian12-12-9-local/cuda-*-keyring.gpg
+    dest: /usr/share/keyrings/
+    mode: '0644'
+  ignore_errors: true
+
+- name: Update APT cache
+  apt:
+    update_cache: yes
+
+- name: Install CUDA Toolkit 12.9
+  apt:
+    name: cuda-toolkit-12-9
+    state: present

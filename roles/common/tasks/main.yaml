@@ -113,3 +113,9 @@
 
 - name: Include pyenv setup
   import_tasks: pyenv.yaml
+
+- name: Install CUDA Toolkit
+  include_tasks: cuda.yml
+
+- name: Install Docker
+  include_tasks: docker.yml

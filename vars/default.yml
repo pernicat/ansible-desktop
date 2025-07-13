@@ -21,7 +21,8 @@ apt_packages:
   - jq
   - tree
   - shellcheck
-  - docker.io
+  # - docker.io
+  # - docker-compose-plugin
   - tmux
   - direnv
   # networking tools

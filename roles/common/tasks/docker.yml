@@ -1,0 +1,31 @@
+- name: Download Docker install script
+  get_url:
+    url: https://get.docker.com
+    dest: /tmp/get-docker.sh
+    mode: '0755'
+
+- name: Run Docker install script
+  command: /tmp/get-docker.sh
+  args:
+    creates: /usr/bin/docker
+
+- name: Add user to docker group
+  user:
+    name: "{{ personal_user }}"
+    groups: docker
+    append: yes
+
+- name: Enable and start Docker
+  systemd:
+    name: docker
+    enabled: true
+    state: started
+
+- name: Check Docker Compose plugin version
+  command: docker compose version
+  register: compose_version
+  changed_when: false
+
+- name: Show Docker Compose plugin version
+  debug:
+    var: compose_version.stdout
