@@ -68,6 +68,7 @@
     mode: '0644'
   become: true
   loop:
+    - .bashrc.d/cuda.sh
     - .bashrc.d/pipx.sh
     - .bashrc.d/pyenv.sh
     - .bashrc.d/direnv.sh
